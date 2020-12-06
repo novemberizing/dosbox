@@ -1924,7 +1924,10 @@ int main(int argc, char* argv[]) {
 	 * with this variable they will work correctly. I've only tested the 1.2.14 behaviour against the windows version
 	 * of libsdl
 	 */
+	printf("SDL_DISABLE_LOCK_KEYS=1\n");
+#ifndef EMSCRIPTEN
 	putenv(const_cast<char*>("SDL_DISABLE_LOCK_KEYS=1"));
+#endif
 #endif
 #ifndef EMSCRIPTEN
 	// Don't init timers, GetTicks seems to work fine and they can use a fair amount of power (Macs again) 
