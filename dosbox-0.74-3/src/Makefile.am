@@ -2,7 +2,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include
 
 SUBDIRS = cpu debug dos fpu gui hardware libs ints misc shell platform 
 
-bin_PROGRAMS = dosbox
+bin_PROGRAMS = dosbox.html
 
 if HAVE_WINDRES
 ico_stuff = winres.rc
