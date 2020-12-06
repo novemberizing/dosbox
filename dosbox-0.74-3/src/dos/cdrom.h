@@ -82,8 +82,11 @@ public:
 private:
 	bool	Open				(void);
 	void	Close				(void);
-
+#ifndef EMSCRIPTEN
 	SDL_CD*	cd;
+#else
+	int cd;
+#endif 
 	int		driveID;
 	Uint32	oldLeadOut;
 };

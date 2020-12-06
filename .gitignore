@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# FOR DOSBOX
+Makefile
+stamp-h1
+config.status
+config.log
+config.h
+a.wasm
+.deps
