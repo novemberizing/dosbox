@@ -186,22 +186,31 @@ bool CDROM_Interface_Image::GetUPC(unsigned char& attr, char* upc)
 
 bool CDROM_Interface_Image::GetAudioTracks(int& stTrack, int& end, TMSF& leadOut)
 {
+#ifndef EMSCRIPTEN
 	stTrack = 1;
 	end = (int)(tracks.size() - 1);
 	FRAMES_TO_MSF(tracks[tracks.size() - 1].start + 150, &leadOut.min, &leadOut.sec, &leadOut.fr);
 	return true;
+#else
+	return false;
+#endif
 }
 
 bool CDROM_Interface_Image::GetAudioTrackInfo(int track, TMSF& start, unsigned char& attr)
 {
+#ifndef EMSCRIPTEN
 	if (track < 1 || track > (int)tracks.size()) return false;
 	FRAMES_TO_MSF(tracks[track - 1].start + 150, &start.min, &start.sec, &start.fr);
 	attr = tracks[track - 1].attr;
 	return true;
+#else
+	return false;
+#endif 
 }
 
 bool CDROM_Interface_Image::GetAudioSub(unsigned char& attr, unsigned char& track, unsigned char& index, TMSF& relPos, TMSF& absPos)
 {
+#ifndef EMSCRIPTEN
 	int cur_track = GetTrack(player.currFrame);
 	if (cur_track < 1) return false;
 	track = (unsigned char)cur_track;
@@ -210,6 +219,9 @@ bool CDROM_Interface_Image::GetAudioSub(unsigned char& attr, unsigned char& trac
 	FRAMES_TO_MSF(player.currFrame + 150, &absPos.min, &absPos.sec, &absPos.fr);
 	FRAMES_TO_MSF(player.currFrame - tracks[track - 1].start + 150, &relPos.min, &relPos.sec, &relPos.fr);
 	return true;
+#else
+	return false;
+#endif
 }
 
 bool CDROM_Interface_Image::GetAudioStatus(bool& playing, bool& pause)
@@ -656,6 +668,7 @@ bool CDROM_Interface_Image::GetCueKeyword(string &keyword, istream &in)
 
 bool CDROM_Interface_Image::GetCueFrame(int &frames, istream &in)
 {
+#ifndef EMSCRIPTEN
 	string msf;
 	in >> msf;
 	int min, sec, fr;
@@ -663,6 +676,9 @@ bool CDROM_Interface_Image::GetCueFrame(int &frames, istream &in)
 	frames = MSF_TO_FRAMES(min, sec, fr);
 	
 	return success;
+#else
+	return false;
+#endif
 }
 
 bool CDROM_Interface_Image::GetCueString(string &str, istream &in)

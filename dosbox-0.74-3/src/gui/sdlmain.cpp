@@ -82,12 +82,14 @@ typedef GLvoid* (APIENTRYP PFNGLMAPBUFFERARBPROC) (GLenum target, GLenum access)
 typedef GLboolean (APIENTRYP PFNGLUNMAPBUFFERARBPROC) (GLenum target);
 #endif
 
+#ifndef EMSCRIPTEN
 PFNGLGENBUFFERSARBPROC glGenBuffersARB = NULL;
 PFNGLBINDBUFFERARBPROC glBindBufferARB = NULL;
 PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB = NULL;
 PFNGLBUFFERDATAARBPROC glBufferDataARB = NULL;
 PFNGLMAPBUFFERARBPROC glMapBufferARB = NULL;
 PFNGLUNMAPBUFFERARBPROC glUnmapBufferARB = NULL;
+#endif
 
 #endif //C_OPENGL
 
@@ -665,7 +667,7 @@ dosurface:
 			goto dosurface;
 		}
 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-#if SDL_VERSION_ATLEAST(1, 2, 11)
+#if SDL_VERSION_ATLEAST(1, 2, 11) && !defined(EMSCRIPTEN)
 		SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 0 );
 #endif
 		GFX_SetupSurfaceScaled(SDL_OPENGL,0);
@@ -1245,12 +1247,14 @@ static void GUI_StartUp(Section * sec) {
 	sdl.opengl.texture=0;
 	sdl.opengl.displaylist=0;
 	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &sdl.opengl.max_texsize);
+#ifndef EMSCRIPTEN
 	glGenBuffersARB = (PFNGLGENBUFFERSARBPROC)SDL_GL_GetProcAddress("glGenBuffersARB");
 	glBindBufferARB = (PFNGLBINDBUFFERARBPROC)SDL_GL_GetProcAddress("glBindBufferARB");
 	glDeleteBuffersARB = (PFNGLDELETEBUFFERSARBPROC)SDL_GL_GetProcAddress("glDeleteBuffersARB");
 	glBufferDataARB = (PFNGLBUFFERDATAARBPROC)SDL_GL_GetProcAddress("glBufferDataARB");
 	glMapBufferARB = (PFNGLMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glMapBufferARB");
 	glUnmapBufferARB = (PFNGLUNMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glUnmapBufferARB");
+#endif 
 	const char * gl_ext = (const char *)glGetString (GL_EXTENSIONS);
 	if(gl_ext && *gl_ext){
 		sdl.opengl.packed_pixel=(strstr(gl_ext,"EXT_packed_pixels") != NULL);
@@ -1922,11 +1926,17 @@ int main(int argc, char* argv[]) {
 	 */
 	putenv(const_cast<char*>("SDL_DISABLE_LOCK_KEYS=1"));
 #endif
+#ifndef EMSCRIPTEN
 	// Don't init timers, GetTicks seems to work fine and they can use a fair amount of power (Macs again) 
 	// Please report problems with audio and other things.
 	if ( SDL_Init( SDL_INIT_AUDIO|SDL_INIT_VIDEO | /*SDL_INIT_TIMER |*/ SDL_INIT_CDROM
 		|SDL_INIT_NOPARACHUTE
 		) < 0 ) E_Exit("Can't init SDL %s",SDL_GetError());
+#else
+	if ( SDL_Init( SDL_INIT_AUDIO|SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
+		E_Exit("Can't init SDL %s",SDL_GetError());
+	}
+#endif 
 	sdl.inited = true;
 
 #ifndef DISABLE_JOYSTICK

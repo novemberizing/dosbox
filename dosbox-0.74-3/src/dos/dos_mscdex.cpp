@@ -876,6 +876,7 @@ static Bit16u MSCDEX_IOCTL_Input(PhysPt buffer,Bit8u drive_unit) {
 					TMSF pos;
 					mscdex->GetCurrentPos(drive_unit,pos);
 					Bit8u addr_mode = mem_readb(buffer+1);
+#ifndef EMSCRIPTEN
 					if (addr_mode==0) {			// HSG
 						Bit32u frames=MSF_TO_FRAMES(pos.min, pos.sec, pos.fr);
 						if (frames<150) MSCDEX_LOG("MSCDEX: Get position: invalid position %d:%d:%d", pos.min, pos.sec, pos.fr);
@@ -890,6 +891,10 @@ static Bit16u MSCDEX_IOCTL_Input(PhysPt buffer,Bit8u drive_unit) {
 						MSCDEX_LOG("MSCDEX: Get position: invalid address mode %x",addr_mode);
 						return 0x03;		// invalid function
 					}
+#else
+					MSCDEX_LOG("MSCDEX: Get position: invalid address mode %x",addr_mode);
+					return 0x03;		// invalid function
+#endif
 				   }break;
 		case 0x06 : /* Get Device status */
 					mem_writed(buffer+1,mscdex->GetDeviceStatus(drive_unit)); 
