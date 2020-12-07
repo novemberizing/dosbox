@@ -580,7 +580,7 @@ var ABORT = false;
 // set by exit() and abort().  Passed to 'onExit' handler.
 // NOTE: This is also used as the process return code code in shell environments
 // but only when noExitRuntime is false.
-var EXITSTATUS;
+var EXITSTATUS = 0;
 
 /** @type {function(*, string=)} */
 function assert(condition, text) {
@@ -1146,9 +1146,35 @@ assert(INITIAL_MEMORY >= TOTAL_STACK, 'INITIAL_MEMORY should be larger than TOTA
 assert(typeof Int32Array !== 'undefined' && typeof Float64Array !== 'undefined' && Int32Array.prototype.subarray !== undefined && Int32Array.prototype.set !== undefined,
        'JS engine does not provide full typed array support');
 
-// If memory is defined in wasm, the user can't provide it.
-assert(!Module['wasmMemory'], 'Use of `wasmMemory` detected.  Use -s IMPORTED_MEMORY to define wasmMemory externally');
-assert(INITIAL_MEMORY == 67108864, 'Detected runtime INITIAL_MEMORY setting.  Use -s IMPORTED_MEMORY to define wasmMemory dynamically');
+// In non-standalone/normal mode, we create the memory here.
+// include: runtime_init_memory.js
+
+
+// Create the main memory. (Note: this isn't used in STANDALONE_WASM mode since the wasm
+// memory is created in the wasm, not in JS.)
+
+  if (Module['wasmMemory']) {
+    wasmMemory = Module['wasmMemory'];
+  } else
+  {
+    wasmMemory = new WebAssembly.Memory({
+      'initial': INITIAL_MEMORY / 65536
+      ,
+      'maximum': INITIAL_MEMORY / 65536
+    });
+  }
+
+if (wasmMemory) {
+  buffer = wasmMemory.buffer;
+}
+
+// If the user provides an incorrect length, just use that length instead rather than providing the user to
+// specifically provide the memory length with Module['INITIAL_MEMORY'].
+INITIAL_MEMORY = buffer.byteLength;
+assert(INITIAL_MEMORY % 65536 === 0);
+updateGlobalBufferAndViews(buffer);
+
+// end include: runtime_init_memory.js
 
 // include: runtime_init_table.js
 // In regular non-RELOCATABLE mode the table is exported
@@ -1509,14 +1535,6 @@ function createWasm() {
 
     Module['asm'] = exports;
 
-    wasmMemory = Module['asm']['memory'];
-    assert(wasmMemory, "memory not found in wasm exports");
-    // This assertion doesn't hold when emscripten is run in --post-link
-    // mode.
-    // TODO(sbc): Read INITIAL_MEMORY out of the wasm file in post-link mode.
-    //assert(wasmMemory.buffer.byteLength === 67108864);
-    updateGlobalBufferAndViews(wasmMemory.buffer);
-
     wasmTable = Module['asm']['__indirect_function_table'];
     assert(wasmTable, "table not found in wasm exports");
 
@@ -1618,9 +1636,9 @@ var ASM_CONSTS = {
         var func = callback.func;
         if (typeof func === 'number') {
           if (callback.arg === undefined) {
-            (function() { dynCall_v.call(null, func); })();
+            getDynCaller("v", func)();
           } else {
-            (function(a1) { dynCall_vi.apply(null, [func, a1]); })(callback.arg);
+            getDynCaller("vi", func)(callback.arg);
           }
         } else {
           func(callback.arg === undefined ? null : callback.arg);
@@ -1641,6 +1659,34 @@ var ASM_CONSTS = {
           var y = demangle(x);
           return x === y ? x : (y + ' [' + x + ']');
         });
+    }
+
+  function dynCallLegacy(sig, ptr, args) {
+      assert(('dynCall_' + sig) in Module, 'bad function pointer type - no table for sig \'' + sig + '\'');
+      if (args && args.length) {
+        // j (64-bit integer) must be passed in as two numbers [low 32, high 32].
+        assert(args.length === sig.substring(1).replace(/j/g, '--').length);
+      } else {
+        assert(sig.length == 1);
+      }
+      if (args && args.length) {
+        return Module['dynCall_' + sig].apply(null, [ptr].concat(args));
+      }
+      return Module['dynCall_' + sig].call(null, ptr);
+    }
+  function dynCall(sig, ptr, args) {
+      return dynCallLegacy(sig, ptr, args);
+    }
+
+  function getDynCaller(sig, ptr) {
+      var argCache = [];
+      return function() {
+        argCache.length = arguments.length;
+        for (var i = 0; i < arguments.length; i++) {
+          argCache[i] = arguments[i];
+        }
+        return dynCall(sig, ptr, argCache);
+      };
     }
 
   function jsStackTrace() {
@@ -3617,7 +3663,7 @@ var ASM_CONSTS = {
         });
         FS.mkdev('/dev/null', FS.makedev(1, 3));
         // setup /dev/tty and /dev/tty1
-        // stderr needs to print output using err() rather than out()
+        // stderr needs to print output using Module['printErr']
         // so we register a second tty just for it.
         TTY.register(FS.makedev(5, 0), TTY.default_tty_ops);
         TTY.register(FS.makedev(6, 0), TTY.default_tty1_ops);
@@ -5585,7 +5631,7 @@ var ASM_CONSTS = {
         if (!SDL.eventHandler) return;
   
         while (SDL.pollEvent(SDL.eventHandlerTemp)) {
-          (function(a1, a2) { dynCall_iii.apply(null, [SDL.eventHandler, a1, a2]); })(SDL.eventHandlerContext, SDL.eventHandlerTemp);
+          getDynCaller("iii", SDL.eventHandler)(SDL.eventHandlerContext, SDL.eventHandlerTemp);
         }
       },pollEvent:function(ptr) {
         if (SDL.initFlags & 0x200 && SDL.joystickEventState) {
@@ -6133,6 +6179,7 @@ var ASM_CONSTS = {
   
       // capture all key events. we just keep down and up, but also capture press to prevent default actions
       if (!Module['doNotCaptureKeyboard']) {
+  	    console.log('test input on');
         var keyboardListeningElement = Module['keyboardListeningElement'] || document;
         keyboardListeningElement.addEventListener("keydown", SDL.receiveEvent);
         keyboardListeningElement.addEventListener("keyup", SDL.receiveEvent);
@@ -6140,6 +6187,8 @@ var ASM_CONSTS = {
         window.addEventListener("focus", SDL.receiveEvent);
         window.addEventListener("blur", SDL.receiveEvent);
         document.addEventListener("visibilitychange", SDL.receiveEvent);
+      } else {
+  	    console.log('text input off');
       }
   
       window.addEventListener("unload", SDL.receiveEvent);
@@ -6375,7 +6424,7 @@ var ASM_CONSTS = {
             if (secsUntilNextPlayStart >= SDL.audio.bufferingDelay + SDL.audio.bufferDurationSecs*SDL.audio.numSimultaneouslyQueuedBuffers) return;
   
             // Ask SDL audio data from the user code.
-            (function(a1, a2, a3) { dynCall_viii.apply(null, [SDL.audio.callback, a1, a2, a3]); })(SDL.audio.userdata, SDL.audio.buffer, SDL.audio.bufferSize);
+            getDynCaller("viii", SDL.audio.callback)(SDL.audio.userdata, SDL.audio.buffer, SDL.audio.bufferSize);
             // And queue it to be played after the currently playing audio stream.
             SDL.audio.pushAudio(SDL.audio.buffer, SDL.audio.bufferSize);
           }
@@ -6724,13 +6773,41 @@ var ASM_CONSTS = {
         GLctx.disjointTimerQueryExt = GLctx.getExtension("EXT_disjoint_timer_query");
         __webgl_enable_WEBGL_multi_draw(GLctx);
   
-        // .getSupportedExtensions() can return null if context is lost, so coerce to empty array.
-        var exts = GLctx.getSupportedExtensions() || [];
+        // These are the 'safe' feature-enabling extensions that don't add any performance impact related to e.g. debugging, and
+        // should be enabled by default so that client GLES2/GL code will not need to go through extra hoops to get its stuff working.
+        // As new extensions are ratified at http://www.khronos.org/registry/webgl/extensions/ , feel free to add your new extensions
+        // here, as long as they don't produce a performance impact for users that might not be using those extensions.
+        // E.g. debugging-related extensions should probably be off by default.
+        var automaticallyEnabledExtensions = [ // Khronos ratified WebGL extensions ordered by number (no debug extensions):
+                                               "OES_texture_float", "OES_texture_half_float", "OES_standard_derivatives",
+                                               "OES_vertex_array_object", "WEBGL_compressed_texture_s3tc", "WEBGL_depth_texture",
+                                               "OES_element_index_uint", "EXT_texture_filter_anisotropic", "EXT_frag_depth",
+                                               "WEBGL_draw_buffers", "ANGLE_instanced_arrays", "OES_texture_float_linear",
+                                               "OES_texture_half_float_linear", "EXT_blend_minmax", "EXT_shader_texture_lod",
+                                               "EXT_texture_norm16",
+                                               // Community approved WebGL extensions ordered by number:
+                                               "WEBGL_compressed_texture_pvrtc", "EXT_color_buffer_half_float", "WEBGL_color_buffer_float",
+                                               "EXT_sRGB", "WEBGL_compressed_texture_etc1", "EXT_disjoint_timer_query",
+                                               "WEBGL_compressed_texture_etc", "WEBGL_compressed_texture_astc", "EXT_color_buffer_float",
+                                               "WEBGL_compressed_texture_s3tc_srgb", "EXT_disjoint_timer_query_webgl2",
+                                               // Old style prefixed forms of extensions (but still currently used on e.g. iPhone Xs as
+                                               // tested on iOS 12.4.1):
+                                               "WEBKIT_WEBGL_compressed_texture_pvrtc"];
+  
+        function shouldEnableAutomatically(extension) {
+          var ret = false;
+          automaticallyEnabledExtensions.forEach(function(include) {
+            if (extension.indexOf(include) != -1) {
+              ret = true;
+            }
+          });
+          return ret;
+        }
+  
+        var exts = GLctx.getSupportedExtensions() || []; // .getSupportedExtensions() can return null if context is lost, so coerce to empty array.
         exts.forEach(function(ext) {
-          // WEBGL_lose_context, WEBGL_debug_renderer_info and WEBGL_debug_shaders are not enabled by default.
-          if (ext.indexOf('lose_context') < 0 && ext.indexOf('debug') < 0) {
-            // Call .getExtension() to enable that extension permanently.
-            GLctx.getExtension(ext);
+          if (automaticallyEnabledExtensions.indexOf(ext) != -1) {
+            GLctx.getExtension(ext); // Calling .getExtension enables that extension permanently, no need to store the return value to be enabled.
           }
         });
       },populateUniformTable:function(program) {
@@ -7159,7 +7236,7 @@ var ASM_CONSTS = {
         var destructor = info.get_destructor();
         if (destructor) {
           // In Wasm, destructors return 'this' as in ARM
-          (function(a1) { dynCall_ii.apply(null, [destructor, a1]); })(info.excPtr);
+          getDynCaller("ii", destructor)(info.excPtr);
         }
         ___cxa_free_exception(info.excPtr);
       }
@@ -9167,6 +9244,7 @@ var asmLibraryArg = {
   "invoke_viiiiiiiiii": invoke_viiiiiiiiii,
   "invoke_viiiiiiiiiiiiiii": invoke_viiiiiiiiiiiiiii,
   "invoke_viijii": invoke_viijii,
+  "memory": wasmMemory,
   "setTempRet0": _setTempRet0,
   "strftime_l": _strftime_l,
   "time": _time
@@ -9932,8 +10010,8 @@ function checkUnflushedContent() {
   // How we flush the streams depends on whether we are in SYSCALLS_REQUIRE_FILESYSTEM=0
   // mode (which has its own special function for this; otherwise, all
   // the code is inside libc)
-  var oldOut = out;
-  var oldErr = err;
+  var print = out;
+  var printErr = err;
   var has = false;
   out = err = function(x) {
     has = true;
@@ -9953,8 +10031,8 @@ function checkUnflushedContent() {
       }
     });
   } catch(e) {}
-  out = oldOut;
-  err = oldErr;
+  out = print;
+  err = printErr;
   if (has) {
     warnOnce('stdio streams had content in them that was not flushed. you should set EXIT_RUNTIME to 1 (see the FAQ), or make sure to emit a newline when you printf etc.');
   }
@@ -10004,7 +10082,7 @@ var shouldRunNow = true;
 
 if (Module['noInitialRun']) shouldRunNow = false;
 
-noExitRuntime = true;
+  noExitRuntime = true;
 
 run();
 

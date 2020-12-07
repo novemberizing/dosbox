@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = dosbox.html$(EXEEXT)
+bin_PROGRAMS = dosbox.js$(EXEEXT) dosbox.wasm$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -102,15 +102,18 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__dosbox_html_SOURCES_DIST = dosbox.cpp winres.rc
+am__dosbox_js_SOURCES_DIST = dosbox.cpp winres.rc
 @HAVE_WINDRES_TRUE@am__objects_1 = winres.$(OBJEXT)
-am_dosbox_html_OBJECTS = dosbox.$(OBJEXT) $(am__objects_1)
-dosbox_html_OBJECTS = $(am_dosbox_html_OBJECTS)
-dosbox_html_DEPENDENCIES = cpu/libcpu.a debug/libdebug.a dos/libdos.a \
+am_dosbox_js_OBJECTS = dosbox.$(OBJEXT) $(am__objects_1)
+dosbox_js_OBJECTS = $(am_dosbox_js_OBJECTS)
+dosbox_js_DEPENDENCIES = cpu/libcpu.a debug/libdebug.a dos/libdos.a \
 	fpu/libfpu.a hardware/libhardware.a gui/libgui.a \
 	ints/libints.a misc/libmisc.a shell/libshell.a \
 	hardware/mame/libmame.a hardware/serialport/libserial.a \
 	libs/gui_tk/libgui_tk.a
+am_dosbox_wasm_OBJECTS =
+dosbox_wasm_OBJECTS = $(am_dosbox_wasm_OBJECTS)
+dosbox_wasm_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -141,8 +144,20 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(dosbox_html_SOURCES)
-DIST_SOURCES = $(am__dosbox_html_SOURCES_DIST)
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
+SOURCES = $(dosbox_js_SOURCES) $(dosbox_wasm_SOURCES)
+DIST_SOURCES = $(am__dosbox_js_SOURCES_DIST) $(dosbox_wasm_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -321,8 +336,10 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/include
 SUBDIRS = cpu debug dos fpu gui hardware libs ints misc shell platform 
 @HAVE_WINDRES_TRUE@ico_stuff = winres.rc
-dosbox_html_SOURCES = dosbox.cpp $(ico_stuff)
-dosbox_html_LDADD = cpu/libcpu.a debug/libdebug.a dos/libdos.a fpu/libfpu.a  hardware/libhardware.a gui/libgui.a \
+dosbox_wasm_SOURCES = 
+dosbox_wasm_LDADD = 
+dosbox_js_SOURCES = dosbox.cpp $(ico_stuff)
+dosbox_js_LDADD = cpu/libcpu.a debug/libdebug.a dos/libdos.a fpu/libfpu.a  hardware/libhardware.a gui/libgui.a \
                ints/libints.a misc/libmisc.a shell/libshell.a hardware/mame/libmame.a \
                hardware/serialport/libserial.a libs/gui_tk/libgui_tk.a
 
@@ -403,9 +420,13 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-dosbox.html$(EXEEXT): $(dosbox_html_OBJECTS) $(dosbox_html_DEPENDENCIES) $(EXTRA_dosbox_html_DEPENDENCIES) 
-	@rm -f dosbox.html$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(dosbox_html_OBJECTS) $(dosbox_html_LDADD) $(LIBS)
+dosbox.js$(EXEEXT): $(dosbox_js_OBJECTS) $(dosbox_js_DEPENDENCIES) $(EXTRA_dosbox_js_DEPENDENCIES) 
+	@rm -f dosbox.js$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(dosbox_js_OBJECTS) $(dosbox_js_LDADD) $(LIBS)
+
+dosbox.wasm$(EXEEXT): $(dosbox_wasm_OBJECTS) $(dosbox_wasm_DEPENDENCIES) $(EXTRA_dosbox_wasm_DEPENDENCIES) 
+	@rm -f dosbox.wasm$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(dosbox_wasm_OBJECTS) $(dosbox_wasm_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
