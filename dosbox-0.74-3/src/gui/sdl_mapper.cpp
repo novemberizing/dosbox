@@ -481,11 +481,18 @@ Bitu GetKeyCode(SDL_keysym keysym) {
 				break;
 		}
 #endif
+		printf("keysym key: %d\n", keysym.sym);
 		return key;
 	} else {
 #if defined (WIN32)
 		/* special handling of 102-key under windows */
 		if ((keysym.sym==SDLK_BACKSLASH) && (keysym.scancode==0x56)) return (Bitu)SDLK_LESS;
+#elif defined (EMSCRIPTEN)
+		switch(keysym.sym)
+		{
+			case 186: printf("%d - %d\n", 186, SDLK_SEMICOLON); return SDLK_SEMICOLON;
+			case 189: printf("%d - %d\n", 189, SDLK_MINUS); return SDLK_MINUS;
+		}
 #endif
 		return (Bitu)keysym.sym;
 	}
@@ -2436,6 +2443,7 @@ void MAPPER_StartUp(Section * sec) {
 
 	usescancodes = false;
 
+#ifndef EMSCRIPTEN
 	if (section->Get_bool("usescancodes")) {
 		usescancodes=true;
 
@@ -2549,6 +2557,7 @@ void MAPPER_StartUp(Section * sec) {
 			if (key<MAX_SDLKEYS) scancode_map[key]=(Bit8u)i;
 		}
 	}
+#endif // 
 
 	Prop_path* pp = section->Get_path("mapperfile");
 	mapper.filename = pp->realpath;
