@@ -54,6 +54,10 @@
 #define MAPPERFILE "mapper-" VERSION ".map"
 //#define DISABLE_JOYSTICK
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif // EMSCRIPTEN
+
 #if C_OPENGL
 #include "SDL_opengl.h"
 
@@ -1847,6 +1851,15 @@ static void erasemapperfile() {
 
 //extern void UI_Init(void);
 int main(int argc, char* argv[]) {
+#ifdef EMSCRIPTEN
+	EM_ASM(
+		FS.mkdir('/dosbox');
+		FS.mount(IDBFS, {}, '/dosbox');
+		FS.syncfs(true, function(err){
+			console.log(err);
+		});
+	);
+#endif // EMSCRIPTEN
 	try {
 		CommandLine com_line(argc,argv);
 		Config myconf(&com_line);

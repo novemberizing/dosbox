@@ -9,6 +9,7 @@
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
     <input type="file" id="upload">
     <button onclick="console.log(Module.canvas.width, Module.canvas.height);">CANVAS</button>
+    <button>FULLSCREEN</button>
     <script>
       var Module = {
         canvas: (function() {
@@ -22,6 +23,31 @@
           return canvas;
         })()
       };
+      const input = document.getElementById('upload');
+      input.addEventListener("change", onUpload, false);
+      function onUpload(e) {
+        console.log(e);
+        console.log(this.files);
+        const file = this.files[0];
+        console.log(file);
+        let reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onload = function() {
+          console.log(reader.result);
+          var x = new Uint8Array(reader.result);
+          var stream = Module.FS.open('/dosbox/' + file.name, "w+");
+          FS.write(stream, x, 0, x.length, 0);
+          console.log(x.length);
+          Module.FS.close(stream);
+          console.log("complete");
+          // UNZIP
+
+        };
+
+        reader.onerror = function() {
+          console.log(reader.error);
+        };
+      }
     </script>
     <script async type="text/javascript" src="dosbox.js" onload="console.log(Module.FS); console.log(Module.canvas.width, Module.canvas.height);"></script>
   </body>
