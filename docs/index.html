@@ -40,6 +40,9 @@
           console.log(x.length);
           Module.FS.close(stream);
           console.log("complete");
+          Module.FS.syncfs(true, function(error){
+            console.log(error);
+          });
           // UNZIP
 
         };
