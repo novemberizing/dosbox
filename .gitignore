@@ -39,3 +39,4 @@ config.log
 config.h
 a.wasm
 .deps
+autom4te.cache
