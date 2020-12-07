@@ -7,6 +7,8 @@
   </head>
   <body>
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    <input type="file" id="upload">
+    <button onclick="console.log(Module.canvas.width, Module.canvas.height);">CANVAS</button>
     <script>
       var Module = {
         canvas: (function() {
@@ -21,7 +23,7 @@
         })()
       };
     </script>
-    <script async type="text/javascript" src="dosbox.js" onload="console.log(Module.FS);"></script>
+    <script async type="text/javascript" src="dosbox.js" onload="console.log(Module.FS); console.log(Module.canvas.width, Module.canvas.height);"></script>
   </body>
 </html>
 
