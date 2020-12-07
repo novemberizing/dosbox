@@ -12,6 +12,7 @@ em++  -g -O3 -mno-ms-bitfields   -s TOTAL_MEMORY=67108864 -s ERROR_ON_UNDEFINED_
 ```
 sudo apt install git
 sudo apt install build-essential
+sudo apt install automake autoconf
 sudo apt install python
 sudo apt install python3
 ```
@@ -23,6 +24,7 @@ https://emscripten.org/docs/getting_started/downloads.html
 ```
 sudo apt install git
 sudo apt install build-essential
+sudo apt install automake autoconf
 sudo apt install python
 sudo apt install python3
 ```
