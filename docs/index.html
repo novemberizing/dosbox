@@ -35,12 +35,14 @@
         reader.onload = function() {
           console.log(reader.result);
           var x = new Uint8Array(reader.result);
+          console.log('/dosbox/' + file.name);
           var stream = Module.FS.open('/dosbox/' + file.name, "w+");
-          FS.write(stream, x, 0, x.length, 0);
-          console.log(x.length);
+          console.log(FS.write(stream, x, 0, x.length, 0));
           Module.FS.close(stream);
+          console.log(x.length);
           console.log("complete");
-          Module.FS.syncfs(true, function(error){
+          Module.FS.syncfs(false, function(error){
+            console.log(2);
             console.log(error);
           });
           // UNZIP
@@ -51,8 +53,19 @@
           console.log(reader.error);
         };
       }
+      function moduleOnLoad() {
+          Module.FS.mkdir('/dosbox');
+          console.log(IDBFS);
+          Module.FS.mount(IDBFS, {}, '/dosbox');
+          FS.syncfs(true, function(err){
+			      console.log(err);
+		      });
+          console.log(Module);
+          console.log(Module.FS);
+          console.log(Module.canvas.width, Module.canvas.height);
+      }
     </script>
-    <script async type="text/javascript" src="dosbox.js" onload="console.log(Module.FS); console.log(Module.canvas.width, Module.canvas.height);"></script>
+    <script async type="text/javascript" src="dosbox.js" onload="moduleOnLoad();"></script>
   </body>
 </html>
 
