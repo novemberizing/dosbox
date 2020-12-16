@@ -1,0 +1,31 @@
+{
+  "name": "@novemberizing/dosbox",
+  "version": "0.0.1",
+  "description": "novemberizing's dosbox web service",
+  "main": "dist/index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/novemberizing/dosbox.git"
+  },
+  "keywords": [
+    "novemberizing",
+    "dosbox",
+    "html5",
+    "emscripten",
+    "emulator",
+    "dos",
+    "game"
+  ],
+  "author": "novemberizing <novemberizing@gmail.com>",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/novemberizing/dosbox/issues"
+  },
+  "homepage": "https://github.com/novemberizing/dosbox#readme"
+}
