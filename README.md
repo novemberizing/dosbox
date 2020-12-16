@@ -1,6 +1,12 @@
 __NOVEMBERIZING DOSBOX FOR HTML5__
 ==================================
 
+```sh
+npm run prebuild
+```
+
+
+
 ## BUILD
 
 ```
@@ -13,12 +19,12 @@ docker run -it --rm --name dosbox -v ${PWD}:/usr/local/apache2/htdocs -p 80:80 h
 ## BUILD
 
 ```
-CXXFLAGS="-g -O3" LDFLAGS="-s TOTAL_MEMORY=67108864 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASYNCIFY -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -lidbfs.js -s EXTRA_EXPORTED_RUNTIME_METHODS=['FS']" emconfigure ./configure --bindir=${PWD}/../docs --datarootdir=${PWD}/../build
+CXXFLAGS="-g -O3" LDFLAGS="-s TOTAL_MEMORY=67108864 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASYNCIFY -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -lidbfs.js -s EXPORTED_RUNTIME_METHODS=['FS'] -s ENVIRONMENT=web -s FILESYSTEM=0" emconfigure ./configure --bindir=${PWD}/../docs --datarootdir=${PWD}/../build --host=`./config.guess`
+emmake make
+emmake make install
 ```
 
-```
-CXXFLAGS="-g -O3" LDFLAGS="-s TOTAL_MEMORY=67108864 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASYNCIFY -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -lidbfs.js -s EXTRA_EXPORTED_RUNTIME_METHODS=['FS']" emconfigure ./configure --bindir=${PWD}/../src --datarootdir=${PWD}/../build
-```
+
 
 ## BUILD ENVIRONMENT
 
