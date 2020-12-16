@@ -49,3 +49,5 @@ https://github.com/emscripten-core/emscripten/issues/4515
 warning: Audio callback had starved sending audio by 0.761900226757291 seconds.
 
 https://stackoverflow.com/questions/54617194/how-to-save-files-from-c-to-browser-storage-with-emscripten
+
+https://zellwk.com/blog/publish-to-npm/
