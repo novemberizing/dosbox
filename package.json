@@ -2,7 +2,7 @@
   "name": "@novemberizing/dosbox",
   "version": "0.0.1",
   "description": "novemberizing's dosbox web service",
-  "main": "dist/index.js",
+  "main": "src/dosbox.js",
   "directories": {
     "doc": "docs"
   },

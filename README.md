@@ -16,6 +16,10 @@ docker run -it --rm --name dosbox -v ${PWD}:/usr/local/apache2/htdocs -p 80:80 h
 CXXFLAGS="-g -O3" LDFLAGS="-s TOTAL_MEMORY=67108864 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASYNCIFY -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -lidbfs.js -s EXTRA_EXPORTED_RUNTIME_METHODS=['FS']" emconfigure ./configure --bindir=${PWD}/../docs --datarootdir=${PWD}/../build
 ```
 
+```
+CXXFLAGS="-g -O3" LDFLAGS="-s TOTAL_MEMORY=67108864 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASYNCIFY -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -lidbfs.js -s EXTRA_EXPORTED_RUNTIME_METHODS=['FS']" emconfigure ./configure --bindir=${PWD}/../src --datarootdir=${PWD}/../build
+```
+
 ## BUILD ENVIRONMENT
 
 ```

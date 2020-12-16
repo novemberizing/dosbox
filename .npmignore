@@ -1,6 +1,7 @@
 doom.zip
-dosbox-0.74.3.tar.gz
-dosbox-0.74.3/
+dosbox-0.74-3/
+dosbox-0.74-3.tar.gz
 docs/
 build/
 node_modules/
+src/dosbox.html
