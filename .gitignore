@@ -43,3 +43,5 @@ autom4te.cache
 dosbox-0.74-3/src/dosbox.js
 dosbox-0.74-3/src/dosbox.html
 dosbox-0.74-3/src/dosbox.wasm
+package-lock.json
+node_modules

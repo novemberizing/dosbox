@@ -1,8 +1,8 @@
 {
   "name": "@novemberizing/dosbox",
-  "version": "0.0.5",
+  "version": "0.0.9",
   "description": "novemberizing's dosbox web service",
-  "main": "src/dosbox.js",
+  "main": "src/index.js",
   "directories": {
     "doc": "docs"
   },
@@ -28,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/novemberizing/dosbox/issues"
   },
-  "homepage": "https://github.com/novemberizing/dosbox#readme"
+  "homepage": "https://github.com/novemberizing/dosbox#readme",
+  "dependencies": {
+    "axios": "^0.21.0"
+  }
 }
