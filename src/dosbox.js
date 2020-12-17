@@ -1,6 +1,3 @@
-var Module = typeof Module !== 'undefined' ? Module : {};
-Module = Object.assign(Module, CustomDosboxModule);
-
 
 var Module = (function() {
   var _scriptDir = import.meta.url;
