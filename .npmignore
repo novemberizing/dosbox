@@ -5,3 +5,4 @@ docs/
 build/
 node_modules/
 src/dosbox.html
+src/pre.js

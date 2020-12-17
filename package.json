@@ -1,13 +1,13 @@
 {
   "name": "@novemberizing/dosbox",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "novemberizing's dosbox web service",
   "main": "src/dosbox.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "prebuild": "cd dosbox-0.74-3; CXXFLAGS=\"-g -O3\" LDFLAGS=\"-s TOTAL_MEMORY=67108864 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASYNCIFY -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -lidbfs.js -s EXPORTED_RUNTIME_METHODS=['FS'] -s ENVIRONMENT=web\" emconfigure ./configure --bindir=${PWD}/../src --datarootdir=${PWD}/../build --host=`./config.guess`; emmake make clean; emmake make; emmake make install;",
+    "prebuild": "cd dosbox-0.74-3 && LIBS=\"-lidbfs.js --extern-pre-js ${PWD}/../src/pre.js\" CXXFLAGS=\"-g -O3\" LDFLAGS=\"-s TOTAL_MEMORY=67108864 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASYNCIFY -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -s EXPORT_ES6=1 -s MODULARIZE=1 -s EXPORTED_RUNTIME_METHODS=['FS']\" emconfigure ./configure --bindir=${PWD}/../src --datarootdir=${PWD}/../build --host=`./config.guess` && emmake make clean && emmake make && emmake make install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
