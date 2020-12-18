@@ -1,7 +1,16 @@
-dnl Init.
+dnl -----------------------------------------------------
+dnl INIT
+dnl -----------------------------------------------------
 AC_INIT(dosbox,0.74-3)
 AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(README)
+
+dnl -----------------------------------------------------
+dnl CHECK FOR EMSCRIPTEN
+dnl -----------------------------------------------------
+AS_CASE([$CC], [*emcc], [enable_emscripten="yes"], [enable_emscripten="no"])
+AS_IF([test "x$enable_emscripten" = "xyes"], AC_MSG_NOTICE([detect use of emscripten]))
+AM_CONDITIONAL([EMSCRIPTEN], [test "x$enable_emscripten" = "xyes"])
 
 dnl Detect the canonical host and target build environment
 AC_CANONICAL_HOST
@@ -550,21 +559,21 @@ esac
 dnl ------------------------------------------------------------
 dnl using @novemberizing/zip 
 dnl ------------------------------------------------------------
-AC_ARG_WITH([zip],
-            AS_HELP_STRING([--with-zip],
-                           [include code for zip]))
+AC_ARG_WITH([zip], AS_HELP_STRING([--with-zip], [include code for zip]), [enable_emscripten="yes"], [enable_emscripten="no"])
 
 dnl ------------------------------------------------------------
 dnl @novemberizing/zip configuration
 dnl ------------------------------------------------------------
 AC_MSG_CHECKING([for --with-zip [$with_zip]])
 
-if test -d "$with_zip" && test -f "$with_zip/src/.libs/libnovemberizingzip.a"; then
-  LIBS="$LIBS $with_zip/src/.libs/libnovemberizingzip.a"
-  AC_MSG_NOTICE([$LIBS])
-  AC_MSG_RESULT([yes])
-else
-  AC_MSG_ERROR([--with-zip must compile novemberizing/zip])
+if test "x$enable_emscripten" != "xno"; then
+  if test -d "$with_zip" && test -f "$with_zip/src/.libs/libnovemberizingzip.a"; then
+    LIBS="$LIBS $with_zip/src/.libs/libnovemberizingzip.a"
+    AC_MSG_NOTICE([$LIBS])
+    AC_MSG_RESULT([yes])
+  else
+    AC_MSG_ERROR([--with-zip must compile novemberizing/zip])
+  fi
 fi
 
 

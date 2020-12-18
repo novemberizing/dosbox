@@ -692,6 +692,8 @@ build_os
 build_vendor
 build_cpu
 build
+EMSCRIPTEN_FALSE
+EMSCRIPTEN_TRUE
 target_alias
 host_alias
 build_alias
@@ -2492,6 +2494,25 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+
+
+case $CC in #(
+  *emcc) :
+    enable_emscripten="yes" ;; #(
+  *) :
+    enable_emscripten="no" ;;
+esac
+if test "x$enable_emscripten" = "xyes"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: detect use of emscripten" >&5
+$as_echo "$as_me: detect use of emscripten" >&6;}
+fi
+ if test "x$enable_emscripten" = "xyes"; then
+  EMSCRIPTEN_TRUE=
+  EMSCRIPTEN_FALSE='#'
+else
+  EMSCRIPTEN_TRUE='#'
+  EMSCRIPTEN_FALSE=
+fi
 
 
 ac_aux_dir=
@@ -7586,21 +7607,25 @@ fi
 
 # Check whether --with-zip was given.
 if test "${with_zip+set}" = set; then :
-  withval=$with_zip;
+  withval=$with_zip; enable_emscripten="yes"
+else
+  enable_emscripten="no"
 fi
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for --with-zip $with_zip" >&5
 $as_echo_n "checking for --with-zip $with_zip... " >&6; }
 
-if test -d "$with_zip" && test -f "$with_zip/src/.libs/libnovemberizingzip.a"; then
-  LIBS="$LIBS $with_zip/src/.libs/libnovemberizingzip.a"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: $LIBS" >&5
+if test "x$enable_emscripten" != "xno"; then
+  if test -d "$with_zip" && test -f "$with_zip/src/.libs/libnovemberizingzip.a"; then
+    LIBS="$LIBS $with_zip/src/.libs/libnovemberizingzip.a"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: $LIBS" >&5
 $as_echo "$as_me: $LIBS" >&6;}
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-else
-  as_fn_error $? "--with-zip must compile novemberizing/zip" "$LINENO" 5
+  else
+    as_fn_error $? "--with-zip must compile novemberizing/zip" "$LINENO" 5
+  fi
 fi
 
 
@@ -7715,6 +7740,10 @@ LIBOBJS=$ac_libobjs
 LTLIBOBJS=$ac_ltlibobjs
 
 
+if test -z "${EMSCRIPTEN_TRUE}" && test -z "${EMSCRIPTEN_FALSE}"; then
+  as_fn_error $? "conditional \"EMSCRIPTEN\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking that generated files are newer than configure" >&5
 $as_echo_n "checking that generated files are newer than configure... " >&6; }
    if test -n "$am_sleep_pid"; then
