@@ -1760,7 +1760,7 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  43385: function() {console.log('hello world');}
+  43417: function() {console.log('hello world');}
 };
 
 
