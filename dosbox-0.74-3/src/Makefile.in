@@ -14,6 +14,7 @@
 
 @SET_MAKE@
 
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -89,8 +90,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @EMSCRIPTEN_FALSE@bin_PROGRAMS = dosbox$(EXEEXT)
-@EMSCRIPTEN_TRUE@bin_PROGRAMS = dosbox.js$(EXEEXT) \
-@EMSCRIPTEN_TRUE@	dosbox.wasm$(EXEEXT)
+@EMSCRIPTEN_TRUE@bin_PROGRAMS = dosbox$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -102,12 +102,14 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(dosboxdir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dosbox_SOURCES_DIST = dosbox.cpp winres.rc
 @HAVE_WINDRES_TRUE@am__objects_1 = winres.$(OBJEXT)
-@EMSCRIPTEN_FALSE@am_dosbox_OBJECTS = dosbox.$(OBJEXT) \
+@EMSCRIPTEN_FALSE@am_dosbox_OBJECTS = dosbox-dosbox.$(OBJEXT) \
 @EMSCRIPTEN_FALSE@	$(am__objects_1)
+@EMSCRIPTEN_TRUE@am_dosbox_OBJECTS = dosbox-dosbox.$(OBJEXT) \
+@EMSCRIPTEN_TRUE@	$(am__objects_1)
 dosbox_OBJECTS = $(am_dosbox_OBJECTS)
 @EMSCRIPTEN_FALSE@dosbox_DEPENDENCIES = cpu/libcpu.a debug/libdebug.a \
 @EMSCRIPTEN_FALSE@	dos/libdos.a fpu/libfpu.a \
@@ -116,22 +118,15 @@ dosbox_OBJECTS = $(am_dosbox_OBJECTS)
 @EMSCRIPTEN_FALSE@	shell/libshell.a hardware/mame/libmame.a \
 @EMSCRIPTEN_FALSE@	hardware/serialport/libserial.a \
 @EMSCRIPTEN_FALSE@	libs/gui_tk/libgui_tk.a
-am__dosbox_js_SOURCES_DIST = dosbox.cpp winres.rc
-@EMSCRIPTEN_TRUE@am_dosbox_js_OBJECTS = dosbox_js-dosbox.$(OBJEXT) \
-@EMSCRIPTEN_TRUE@	$(am__objects_1)
-dosbox_js_OBJECTS = $(am_dosbox_js_OBJECTS)
-@EMSCRIPTEN_TRUE@dosbox_js_DEPENDENCIES = cpu/libcpu.a \
-@EMSCRIPTEN_TRUE@	debug/libdebug.a dos/libdos.a fpu/libfpu.a \
+@EMSCRIPTEN_TRUE@dosbox_DEPENDENCIES = cpu/libcpu.a debug/libdebug.a \
+@EMSCRIPTEN_TRUE@	dos/libdos.a fpu/libfpu.a \
 @EMSCRIPTEN_TRUE@	hardware/libhardware.a gui/libgui.a \
 @EMSCRIPTEN_TRUE@	ints/libints.a misc/libmisc.a \
 @EMSCRIPTEN_TRUE@	shell/libshell.a hardware/mame/libmame.a \
 @EMSCRIPTEN_TRUE@	hardware/serialport/libserial.a \
 @EMSCRIPTEN_TRUE@	libs/gui_tk/libgui_tk.a
-dosbox_js_LINK = $(CXXLD) $(dosbox_js_CXXFLAGS) $(CXXFLAGS) \
-	$(dosbox_js_LDFLAGS) $(LDFLAGS) -o $@
-am_dosbox_wasm_OBJECTS =
-dosbox_wasm_OBJECTS = $(am_dosbox_wasm_OBJECTS)
-dosbox_wasm_DEPENDENCIES =
+dosbox_LINK = $(CXXLD) $(dosbox_CXXFLAGS) $(CXXFLAGS) \
+	$(dosbox_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -147,8 +142,7 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/dosbox.Po \
-	./$(DEPDIR)/dosbox_js-dosbox.Po
+am__depfiles_remade = ./$(DEPDIR)/dosbox-dosbox.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -167,22 +161,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-AM_V_CC = $(am__v_CC_@AM_V@)
-am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
-am__v_CC_0 = @echo "  CC      " $@;
-am__v_CC_1 = 
-CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-AM_V_CCLD = $(am__v_CCLD_@AM_V@)
-am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
-am__v_CCLD_0 = @echo "  CCLD    " $@;
-am__v_CCLD_1 = 
-SOURCES = $(dosbox_SOURCES) $(dosbox_js_SOURCES) \
-	$(dosbox_wasm_SOURCES)
-DIST_SOURCES = $(am__dosbox_SOURCES_DIST) \
-	$(am__dosbox_js_SOURCES_DIST) $(dosbox_wasm_SOURCES)
+SOURCES = $(dosbox_SOURCES)
+DIST_SOURCES = $(am__dosbox_SOURCES_DIST)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -196,6 +176,34 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+DATA = $(dosbox_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 am__recursive_targets = \
@@ -361,20 +369,20 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/include
 SUBDIRS = cpu debug dos fpu gui hardware libs ints misc shell platform 
 @HAVE_WINDRES_TRUE@ico_stuff = winres.rc
-@EMSCRIPTEN_TRUE@dosbox_wasm_SOURCES = 
-@EMSCRIPTEN_TRUE@dosbox_wasm_LDADD = 
-@EMSCRIPTEN_TRUE@dosbox_js_CXXFLAGS = -g -O3
-@EMSCRIPTEN_TRUE@dosbox_js_LDFLAGS = -s TOTAL_MEMORY=67108864 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASYNCIFY -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -s EXPORT_ES6=1 -s MODULARIZE=1 -s EXPORTED_RUNTIME_METHODS=['FS']
-@EMSCRIPTEN_TRUE@dosbox_js_SOURCES = dosbox.cpp $(ico_stuff)
-@EMSCRIPTEN_TRUE@dosbox_js_LDADD = cpu/libcpu.a debug/libdebug.a dos/libdos.a fpu/libfpu.a  hardware/libhardware.a gui/libgui.a \
-@EMSCRIPTEN_TRUE@               ints/libints.a misc/libmisc.a shell/libshell.a hardware/mame/libmame.a \
-@EMSCRIPTEN_TRUE@               hardware/serialport/libserial.a libs/gui_tk/libgui_tk.a -lidbfs.js
-
+@EMSCRIPTEN_TRUE@dosbox_CXXFLAGS = -g -O3
+@EMSCRIPTEN_TRUE@dosbox_LDFLAGS = -s TOTAL_MEMORY=67108864 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASYNCIFY -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -s EXPORT_ES6=1 -s MODULARIZE=1 -s EXPORTED_RUNTIME_METHODS=['FS']
 @EMSCRIPTEN_FALSE@dosbox_SOURCES = dosbox.cpp $(ico_stuff)
+@EMSCRIPTEN_TRUE@dosbox_SOURCES = dosbox.cpp $(ico_stuff)
 @EMSCRIPTEN_FALSE@dosbox_LDADD = cpu/libcpu.a debug/libdebug.a dos/libdos.a fpu/libfpu.a  hardware/libhardware.a gui/libgui.a \
 @EMSCRIPTEN_FALSE@               ints/libints.a misc/libmisc.a shell/libshell.a hardware/mame/libmame.a \
 @EMSCRIPTEN_FALSE@               hardware/serialport/libserial.a libs/gui_tk/libgui_tk.a
 
+@EMSCRIPTEN_TRUE@dosbox_LDADD = cpu/libcpu.a debug/libdebug.a dos/libdos.a fpu/libfpu.a  hardware/libhardware.a gui/libgui.a \
+@EMSCRIPTEN_TRUE@               ints/libints.a misc/libmisc.a shell/libshell.a hardware/mame/libmame.a \
+@EMSCRIPTEN_TRUE@               hardware/serialport/libserial.a libs/gui_tk/libgui_tk.a -lidbfs.js
+
+@EMSCRIPTEN_TRUE@dosboxdir = $(datadir)
+@EMSCRIPTEN_TRUE@dosbox_DATA = dosbox.wasm
 @EMSCRIPTEN_FALSE@EXTRA_DIST = winres.rc dosbox.ico
 all: all-recursive
 
@@ -454,15 +462,7 @@ clean-binPROGRAMS:
 
 dosbox$(EXEEXT): $(dosbox_OBJECTS) $(dosbox_DEPENDENCIES) $(EXTRA_dosbox_DEPENDENCIES) 
 	@rm -f dosbox$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(dosbox_OBJECTS) $(dosbox_LDADD) $(LIBS)
-
-dosbox.js$(EXEEXT): $(dosbox_js_OBJECTS) $(dosbox_js_DEPENDENCIES) $(EXTRA_dosbox_js_DEPENDENCIES) 
-	@rm -f dosbox.js$(EXEEXT)
-	$(AM_V_CXXLD)$(dosbox_js_LINK) $(dosbox_js_OBJECTS) $(dosbox_js_LDADD) $(LIBS)
-
-dosbox.wasm$(EXEEXT): $(dosbox_wasm_OBJECTS) $(dosbox_wasm_DEPENDENCIES) $(EXTRA_dosbox_wasm_DEPENDENCIES) 
-	@rm -f dosbox.wasm$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(dosbox_wasm_OBJECTS) $(dosbox_wasm_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(dosbox_LINK) $(dosbox_OBJECTS) $(dosbox_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -470,8 +470,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dosbox.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dosbox_js-dosbox.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dosbox-dosbox.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -493,19 +492,40 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-dosbox_js-dosbox.o: dosbox.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dosbox_js_CXXFLAGS) $(CXXFLAGS) -MT dosbox_js-dosbox.o -MD -MP -MF $(DEPDIR)/dosbox_js-dosbox.Tpo -c -o dosbox_js-dosbox.o `test -f 'dosbox.cpp' || echo '$(srcdir)/'`dosbox.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dosbox_js-dosbox.Tpo $(DEPDIR)/dosbox_js-dosbox.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='dosbox.cpp' object='dosbox_js-dosbox.o' libtool=no @AMDEPBACKSLASH@
+dosbox-dosbox.o: dosbox.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dosbox_CXXFLAGS) $(CXXFLAGS) -MT dosbox-dosbox.o -MD -MP -MF $(DEPDIR)/dosbox-dosbox.Tpo -c -o dosbox-dosbox.o `test -f 'dosbox.cpp' || echo '$(srcdir)/'`dosbox.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dosbox-dosbox.Tpo $(DEPDIR)/dosbox-dosbox.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='dosbox.cpp' object='dosbox-dosbox.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dosbox_js_CXXFLAGS) $(CXXFLAGS) -c -o dosbox_js-dosbox.o `test -f 'dosbox.cpp' || echo '$(srcdir)/'`dosbox.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dosbox_CXXFLAGS) $(CXXFLAGS) -c -o dosbox-dosbox.o `test -f 'dosbox.cpp' || echo '$(srcdir)/'`dosbox.cpp
 
-dosbox_js-dosbox.obj: dosbox.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dosbox_js_CXXFLAGS) $(CXXFLAGS) -MT dosbox_js-dosbox.obj -MD -MP -MF $(DEPDIR)/dosbox_js-dosbox.Tpo -c -o dosbox_js-dosbox.obj `if test -f 'dosbox.cpp'; then $(CYGPATH_W) 'dosbox.cpp'; else $(CYGPATH_W) '$(srcdir)/dosbox.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dosbox_js-dosbox.Tpo $(DEPDIR)/dosbox_js-dosbox.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='dosbox.cpp' object='dosbox_js-dosbox.obj' libtool=no @AMDEPBACKSLASH@
+dosbox-dosbox.obj: dosbox.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dosbox_CXXFLAGS) $(CXXFLAGS) -MT dosbox-dosbox.obj -MD -MP -MF $(DEPDIR)/dosbox-dosbox.Tpo -c -o dosbox-dosbox.obj `if test -f 'dosbox.cpp'; then $(CYGPATH_W) 'dosbox.cpp'; else $(CYGPATH_W) '$(srcdir)/dosbox.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dosbox-dosbox.Tpo $(DEPDIR)/dosbox-dosbox.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='dosbox.cpp' object='dosbox-dosbox.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dosbox_js_CXXFLAGS) $(CXXFLAGS) -c -o dosbox_js-dosbox.obj `if test -f 'dosbox.cpp'; then $(CYGPATH_W) 'dosbox.cpp'; else $(CYGPATH_W) '$(srcdir)/dosbox.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dosbox_CXXFLAGS) $(CXXFLAGS) -c -o dosbox-dosbox.obj `if test -f 'dosbox.cpp'; then $(CYGPATH_W) 'dosbox.cpp'; else $(CYGPATH_W) '$(srcdir)/dosbox.cpp'; fi`
+install-dosboxDATA: $(dosbox_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dosbox_DATA)'; test -n "$(dosboxdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(dosboxdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(dosboxdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(dosboxdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(dosboxdir)" || exit $$?; \
+	done
+
+uninstall-dosboxDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dosbox_DATA)'; test -n "$(dosboxdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(dosboxdir)'; $(am__uninstall_files_from_dir)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -666,10 +686,10 @@ distdir-am: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(PROGRAMS) $(DATA)
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(dosboxdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-recursive
@@ -707,8 +727,7 @@ clean: clean-recursive
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-recursive
-		-rm -f ./$(DEPDIR)/dosbox.Po
-	-rm -f ./$(DEPDIR)/dosbox_js-dosbox.Po
+		-rm -f ./$(DEPDIR)/dosbox-dosbox.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -725,7 +744,7 @@ info: info-recursive
 
 info-am:
 
-install-data-am:
+install-data-am: install-dosboxDATA
 
 install-dvi: install-dvi-recursive
 
@@ -754,8 +773,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
-		-rm -f ./$(DEPDIR)/dosbox.Po
-	-rm -f ./$(DEPDIR)/dosbox_js-dosbox.Po
+		-rm -f ./$(DEPDIR)/dosbox-dosbox.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -771,7 +789,7 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-dosboxDATA
 
 .MAKE: $(am__recursive_targets) install-am install-strip
 
@@ -780,15 +798,15 @@ uninstall-am: uninstall-binPROGRAMS
 	clean-generic cscopelist-am ctags ctags-am distclean \
 	distclean-compile distclean-generic distclean-tags distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-binPROGRAMS
+	install-binPROGRAMS install-data install-data-am \
+	install-dosboxDATA install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-binPROGRAMS uninstall-dosboxDATA
 
 .PRECIOUS: Makefile
 

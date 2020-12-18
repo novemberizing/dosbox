@@ -2506,6 +2506,9 @@ if test "x$enable_emscripten" = "xyes"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: detect use of emscripten" >&5
 $as_echo "$as_me: detect use of emscripten" >&6;}
 fi
+if test "x$enable_emscripten" = "xyes"; then :
+  ac_cv_exeext=.js
+fi
  if test "x$enable_emscripten" = "xyes"; then
   EMSCRIPTEN_TRUE=
   EMSCRIPTEN_FALSE='#'

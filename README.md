@@ -34,6 +34,16 @@ $ emmake make install
 ```
 
 
+"prebuild": "cd dosbox-0.74-3 && 
+
+emconfigure ./configure --bindir=${PWD}/../src --datarootdir=${PWD}/../build --host=`./config.guess`
+
+&&
+
+emmake make clean &&
+emmake make &&
+emmake make install",
+
 
 
 
@@ -165,3 +175,5 @@ warning: Audio callback had starved sending audio by 0.761900226757291 seconds.
 https://stackoverflow.com/questions/54617194/how-to-save-files-from-c-to-browser-storage-with-emscripten
 
 https://zellwk.com/blog/publish-to-npm/
+
+https://stackoverflow.com/questions/35840047/configure-automake-to-install-extra-programs

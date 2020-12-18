@@ -10,6 +10,7 @@ dnl CHECK FOR EMSCRIPTEN
 dnl -----------------------------------------------------
 AS_CASE([$CC], [*emcc], [enable_emscripten="yes"], [enable_emscripten="no"])
 AS_IF([test "x$enable_emscripten" = "xyes"], AC_MSG_NOTICE([detect use of emscripten]))
+AS_IF([test "x$enable_emscripten" = "xyes"], [ac_cv_exeext=.js])
 AM_CONDITIONAL([EMSCRIPTEN], [test "x$enable_emscripten" = "xyes"])
 
 dnl Detect the canonical host and target build environment
