@@ -753,6 +753,7 @@ enable_fpu
 enable_fpu_x86
 enable_unaligned_memory
 enable_opengl
+with_zip
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1422,6 +1423,7 @@ Optional Packages:
   --with-sdl-exec-prefix=PFX Exec prefix where SDL is installed (optional)
   --with-alsa-prefix=PFX  Prefix where Alsa library is installed(optional)
   --with-alsa-inc-prefix=PFX  Prefix where include libraries are (optional)
+  --with-zip              include code for zip
 
 Some influential environment variables:
   CC          C compiler command
@@ -7580,6 +7582,26 @@ else
 fi
 
 
+
+
+# Check whether --with-zip was given.
+if test "${with_zip+set}" = set; then :
+  withval=$with_zip;
+fi
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for --with-zip $with_zip" >&5
+$as_echo_n "checking for --with-zip $with_zip... " >&6; }
+
+if test -d "$with_zip" && test -f "$with_zip/src/.libs/libnovemberizingzip.a"; then
+  LIBS="$LIBS $with_zip/src/.libs/libnovemberizingzip.a"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: $LIBS" >&5
+$as_echo "$as_me: $LIBS" >&6;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  as_fn_error $? "--with-zip must compile novemberizing/zip" "$LINENO" 5
+fi
 
 
 ac_config_files="$ac_config_files Makefile src/Makefile src/cpu/Makefile src/cpu/core_full/Makefile src/cpu/core_normal/Makefile src/cpu/core_dyn_x86/Makefile src/cpu/core_dynrec/Makefile src/debug/Makefile src/dos/Makefile src/fpu/Makefile src/gui/Makefile src/hardware/Makefile src/hardware/mame/Makefile src/hardware/serialport/Makefile src/ints/Makefile src/libs/Makefile src/libs/zmbv/Makefile src/libs/gui_tk/Makefile src/misc/Makefile src/shell/Makefile src/platform/Makefile src/platform/visualc/Makefile visualc_net/Makefile include/Makefile docs/Makefile"

@@ -547,6 +547,26 @@ esac
        AM_CONDITIONAL(HAVE_WINDRES, test "x$WINDRES" != "x:")
        AC_SUBST(WINDRES)
 
+dnl ------------------------------------------------------------
+dnl using @novemberizing/zip 
+dnl ------------------------------------------------------------
+AC_ARG_WITH([zip],
+            AS_HELP_STRING([--with-zip],
+                           [include code for zip]))
+
+dnl ------------------------------------------------------------
+dnl @novemberizing/zip configuration
+dnl ------------------------------------------------------------
+AC_MSG_CHECKING([for --with-zip [$with_zip]])
+
+if test -d "$with_zip" && test -f "$with_zip/src/.libs/libnovemberizingzip.a"; then
+  LIBS="$LIBS $with_zip/src/.libs/libnovemberizingzip.a"
+  AC_MSG_NOTICE([$LIBS])
+  AC_MSG_RESULT([yes])
+else
+  AC_MSG_ERROR([--with-zip must compile novemberizing/zip])
+fi
+
 
 AC_CONFIG_FILES([ 
 Makefile

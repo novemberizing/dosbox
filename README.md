@@ -1,8 +1,6 @@
 __NOVEMBERIZING DOSBOX PORTED TO EMSCRIPTEN__
 =============================================
 
-
-
 "dosbox" is distributed under the GNU General Public License.
 See the COPYING file for more information.
 
@@ -24,6 +22,17 @@ dosbox.run(null)
        .then(o => console.log(o))
        .catch(e => console.log(e));
 ```
+
+
+
+```sh
+$ cd dosbox-0.74-3
+$ LIBS="-lidbfs.js" CXXFLAGS="-g -O3" LDFLAGS="-s TOTAL_MEMORY=67108864 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s ASYNCIFY -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -s EXPORT_ES6=1 -s MODULARIZE=1 -s EXPORTED_RUNTIME_METHODS=['FS']" emconfigure ./configure --bindir=${PWD}/../src --datarootdir=${PWD}/../build --host=`./config.guess` --with-zip=${PWD}/../../zip
+$ emmake make clean
+$ emmake make 
+$ emmake make install
+```
+
 
 
 
