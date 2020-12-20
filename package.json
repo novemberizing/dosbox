@@ -1,6 +1,6 @@
 {
   "name": "@novemberizing/dosbox",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "description": "novemberizing's dosbox web service",
   "main": "src/index.js",
   "directories": {

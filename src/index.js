@@ -6,11 +6,14 @@ const o = {
     run: async function(canvas){
         const bin = await axios.get(url, {responseType: 'arraybuffer'});
 
-        canvas = canvas || document.createElement('canvas');
-        canvas.id = 'canvas';
-        canvas.tabIndex = -1;
-        canvas.width=640;
-        canvas.height=400;
+        if(!canvas) {
+            canvas = document.createElement('canvas');
+            canvas.id = 'canvas';
+            canvas.tabIndex = -1;
+            canvas.width=640;
+            canvas.height=400;
+        }
+
         canvas.addEventListener(oncontextmenu, function(e) {
             e.preventDefault();
         });
@@ -22,7 +25,7 @@ const o = {
             document.body.appendChild(canvas);
         }
 
-        await dosbox({canvas, wasmBinary: bin.data });
+        return await dosbox({canvas, wasmBinary: bin.data });
     }
 };
 
