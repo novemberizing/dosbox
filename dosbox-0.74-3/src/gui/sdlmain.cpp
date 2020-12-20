@@ -1851,15 +1851,13 @@ static void erasemapperfile() {
 
 //extern void UI_Init(void);
 int main(int argc, char* argv[]) {
-	printf("hello world\n");
 #ifdef EMSCRIPTEN
 	EM_ASM(
-		console.log('hello world');
-		// FS.mkdir('/dosbox');
-		// FS.mount(IDBFS, {}, '/dosbox');
-		// FS.syncfs(true, function(err){
-		// 	console.log(err);
-		// });
+		FS.mkdir('/dosbox');
+		FS.mount(IDBFS, {}, '/dosbox');
+		FS.syncfs(true, function(err){
+			console.log(err);
+		});
 	);
 #endif // EMSCRIPTEN
 	try {

@@ -8,19 +8,20 @@ const o = {
 
         if(!canvas) {
             canvas = document.createElement('canvas');
-            canvas.id = 'canvas';
+            canvas.id = 'dosbox';
             canvas.tabIndex = -1;
             canvas.width=640;
             canvas.height=400;
         }
 
-        canvas.addEventListener(oncontextmenu, function(e) {
+        canvas.addEventListener("oncontextmenu", function(e) {
             e.preventDefault();
         });
         canvas.addEventListener("webglcontextlost", function(e) {
             alert('WebGL context lost. You will need to reload the page.');
             e.preventDefault();
         }, false);
+
         if(!document.getElementById(canvas.id)) {
             document.body.appendChild(canvas);
         }

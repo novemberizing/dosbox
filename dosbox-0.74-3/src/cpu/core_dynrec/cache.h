@@ -622,7 +622,10 @@ static void cache_init(bool enable) {
 		// link code that returns with a special return code
 		dyn_return(BR_Link2,false);
 
+		printf("%d\n", sizeof(Bit8u));
+
 		cache.pos=&cache_code_link_blocks[64];
+		printf("%x\n", cache.pos);
 		core_dynrec.runcode=(BlockReturn (*)(Bit8u*))cache.pos;
 //		link_blocks[1].cache.start=cache.pos;
 		dyn_run_code();

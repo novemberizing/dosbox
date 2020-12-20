@@ -1,6 +1,12 @@
 __NOVEMBERIZING DOSBOX PORTED TO EMSCRIPTEN__
 =============================================
 
+DOSBOX, EMSCRIPTEN, ZLIB
+
+- SUPPORT IDBFS FILE SYSTEM
+
+
+
 "dosbox" is distributed under the GNU General Public License.
 See the COPYING file for more information.
 

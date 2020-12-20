@@ -228,6 +228,9 @@ run_block:
 		cache.block.running=0;
 		// now we're ready to run the dynamic code block
 //		BlockReturn ret=((BlockReturn (*)(void))(block->cache.start))();
+#ifdef EMSCRIPTEN
+		printf("core_dynrec.runcode: %x\n", core_dynrec.runcode);
+#endif // EMSCRIPTEN
 		BlockReturn ret=core_dynrec.runcode(block->cache.start);
 
 		switch (ret) {

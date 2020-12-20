@@ -1,6 +1,6 @@
 {
   "name": "@novemberizing/dosbox",
-  "version": "0.0.12",
+  "version": "0.0.14",
   "description": "novemberizing's dosbox web service",
   "main": "src/index.js",
   "directories": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build:extension:zip": "cd extensions/zip && emconfigure ./configure && emmake make clean && emmake make",
-    "build:dosbox": "cd dosbox-0.74-3 && emconfigure ./configure --datadir=${PWD}/../src --bindir=${PWD}/../src --datarootdir=${PWD}/../build --host=`./config.guess` --with-zip=${PWD}/../extensions/zip && emmake make clean && emmake make && emmake make install",
+    "build:dosbox": "cd dosbox-0.74-3 && emconfigure ./configure --datadir=${PWD}/../src --bindir=${PWD}/../src --datarootdir=${PWD}/../build --with-zip=${PWD}/../extensions/zip && emmake make clean && emmake make && emmake make install",
     "build:all": "npm run build:extension:zip && npm run build:dosbox",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

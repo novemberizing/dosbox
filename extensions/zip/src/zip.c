@@ -523,77 +523,76 @@ static int __deflate(Item * item, FILE * source, const char * filepath, int leve
 
 static uint32_t __get_signature(FILE * fp);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-    EMSCRIPTEN_KEEPALIVE int unzip(const char * path)
-    {
-        FILE * fp = fopen(path, "rb");
-        if(fp) {
-            Root root = { 0, };
-            uint32_t signature = 0;
-            while((signature = __get_signature(fp)) != 0) {
-                if(signature == SIGNATURE_FILE) {
-                    if(__generate_file_tag(&root, fp) == NULL) {
-                        fprintf(stdout, "fail to unzip caused by __generate_file_tag\n");
-                        __clear_root(&root);
-                        fclose(fp);
-                        return -1;
-                    }
-                } else if(signature == SIGNATURE_CENTRAL) {
-                    if(__generate_central_tag(&root, fp) == NULL) {
-                        fprintf(stdout, "fail to unzip caused by __generate_central_tag\n");
-                        __clear_root(&root);
-                        fclose(fp);
-                        return -1;
-                    }
-                } else if(signature == SIGNATURE_CENTRAL_END) {
-                    if(__generate_end_tag(&root, fp) == NULL) {
-                        fprintf(stdout, "fail to unzip caused by __generate_end_tag\n");
-                        __clear_root(&root);
-                        fclose(fp);
-                        return -1;
-                    }
-                    break;
-                } else {
+EMSCRIPTEN_KEEPALIVE int unzip(const char * path)
+{
+    printf("%s\n", path);
+    FILE * fp = fopen(path, "rb");
+    if(fp) {
+        Root root = { 0, };
+        uint32_t signature = 0;
+        while((signature = __get_signature(fp)) != 0) {
+            if(signature == SIGNATURE_FILE) {
+                if(__generate_file_tag(&root, fp) == NULL) {
+                    fprintf(stdout, "fail to unzip caused by __generate_file_tag\n");
                     __clear_root(&root);
                     fclose(fp);
-                    fprintf(stdout, "fail to unzip caused by unknown error :%x\n", signature);
-                    break;
+                    return -1;
                 }
+            } else if(signature == SIGNATURE_CENTRAL) {
+                if(__generate_central_tag(&root, fp) == NULL) {
+                    fprintf(stdout, "fail to unzip caused by __generate_central_tag\n");
+                    __clear_root(&root);
+                    fclose(fp);
+                    return -1;
+                }
+            } else if(signature == SIGNATURE_CENTRAL_END) {
+                if(__generate_end_tag(&root, fp) == NULL) {
+                    fprintf(stdout, "fail to unzip caused by __generate_end_tag\n");
+                    __clear_root(&root);
+                    fclose(fp);
+                    return -1;
+                }
+                break;
+            } else {
+                __clear_root(&root);
+                fclose(fp);
+                fprintf(stdout, "fail to unzip caused by unknown error :%x\n", signature);
+                break;
             }
-
-            Item * item = root.head;
-            char workdir[256];
-            workdir[0] = 0;
-            __filename(workdir, 256, path);
-            char filepath[PATH_MAX];
-
-            while(item) {
-                snprintf(filepath, PATH_MAX, "%s/%s", workdir, item->file.name);
-                fprintf(stdout, "%s\n", item->file.name);
-                // printf("filepath: %s\n", filepath);
-                // FILE CHECK
-                __mkdir(filepath, 1);
-                // printf("%s\n", filepath);
-                __inflate(item, fp, filepath);
-
-
-                item = item->next;
-            }
-            __clear_root(&root);
-            fclose(fp);
         }
-        return -1;
+
+        Item * item = root.head;
+        char workdir[256];
+        workdir[0] = 0;
+        __filename(workdir, 256, path);
+        char filepath[PATH_MAX];
+
+        while(item) {
+            snprintf(filepath, PATH_MAX, "%s/%s", workdir, item->file.name);
+            fprintf(stdout, "%s\n", item->file.name);
+            // printf("filepath: %s\n", filepath);
+            // FILE CHECK
+            __mkdir(filepath, 1);
+            // printf("%s\n", filepath);
+            __inflate(item, fp, filepath);
+
+
+            item = item->next;
+        }
+        __clear_root(&root);
+        fclose(fp);
+        fprintf(stdout, "succeed to unzip\n");
+        return 0;
     }
-    EMSCRIPTEN_KEEPALIVE int zip(const char * path)
-    {
-        fprintf(stdout, "implement this\n");
-        return -1;
-    }
-#ifdef __cplusplus
+    fprintf(stdout, "fp is null\n");
+    return -1;
 }
-#endif // 
+EMSCRIPTEN_KEEPALIVE int zip(const char * path)
+{
+    fprintf(stdout, "implement this\n");
+    return -1;
+}
+
 
 static uint32_t __get_signature(FILE * fp)
 {
