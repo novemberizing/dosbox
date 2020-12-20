@@ -7,6 +7,12 @@ See the COPYING file for more information.
 
 DOSBOX, EMSCRIPTEN
 
+## __BUILD__
+
+```sh
+$ npm run build
+```
+
 ## __INSTALL__
 
 ```sh

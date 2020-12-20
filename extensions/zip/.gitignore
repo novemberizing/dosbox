@@ -1,3 +1,5 @@
 libtool
 src/example-unzip
+src/zip.js
+src/zip.wasm
 doom
