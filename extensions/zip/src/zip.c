@@ -425,20 +425,26 @@ static int __inflate(Item * item, FILE * source, const char * filepath)
     strm.avail_in = 0;
     strm.next_in = Z_NULL;
 
-    printf("offset (%d)\n", item->file.offset);
+    if(item->file.data->method != 8) {
+        fprintf(stdout, "fail to __inflate caused by not supported zip (%d)\n", item->file.data->method);
+        return -1;
+    }
+
+    // printf("offset (%d)\n", item->file.offset);
     if(fseek(source, item->file.offset + item->file.data->filename + item->file.data->extra + sizeof(File), SEEK_SET) < 0) {
         fprintf(stdout, "fail to __inflate caused by fseek (%d)\n", errno);
         return -1;
     }
-    printf("%d\n", item->file.offset + item->file.data->filename + item->file.data->extra + sizeof(File));
-    printf("%d\n", ftell(source));
+    // printf("%d\n", item->file.offset + item->file.data->filename + item->file.data->extra + sizeof(File));
+    // printf("%d\n", ftell(source));
 
     FILE * destination = fopen(filepath, "w+");
     if(destination == NULL) {
         fprintf(stdout, "fail to __inflate caused by fopen (%d)\n", errno);
         return -1;
     }
-    printf("method: %d\n", item->file.data->method);
+    // printf("method: %d\n", item->file.data->method);
+    
 
     ret = inflateInit2(&strm, -MAX_WBITS);
     if (ret != Z_OK) {
@@ -450,10 +456,10 @@ static int __inflate(Item * item, FILE * source, const char * filepath)
 
     do {
         uint32_t progress = remain > CHUNK ? CHUNK : remain;
-        printf("%d\n", progress);
+        // printf("%d\n", progress);
         strm.avail_in = fread(in, 1, progress, source);
-        printf("%d\n", ftell(source));
-        printf("%d\n", strm.avail_in);
+        // printf("%d\n", ftell(source));
+        // printf("%d\n", strm.avail_in);
         if (ferror(source)) {
             (void)inflateEnd(&strm);
             fclose(destination);
@@ -494,7 +500,7 @@ static int __inflate(Item * item, FILE * source, const char * filepath)
             }
 
             have = CHUNK - strm.avail_out;
-            printf("have: %d\n", have);
+            // printf("have: %d\n", have);
             if (fwrite(out, 1, have, destination) != have || ferror(destination)) {
                 (void)inflateEnd(&strm);
                 fclose(destination);
@@ -502,10 +508,11 @@ static int __inflate(Item * item, FILE * source, const char * filepath)
             }
         } while (strm.avail_out == 0);
         remain -= progress;
-        printf("%d\n", remain);
+        // printf("%d\n", remain);
     } while (ret != Z_STREAM_END);
-    fprintf(stdout, "succeed to inflate\n");
+    // fprintf(stdout, "succeed to inflate\n");
     fclose(destination);
+    (void)inflateEnd(&strm);
     return 0;
 }
 
@@ -564,10 +571,11 @@ extern "C" {
 
             while(item) {
                 snprintf(filepath, PATH_MAX, "%s/%s", workdir, item->file.name);
-                printf("filepath: %s\n", filepath);
+                fprintf(stdout, "%s\n", item->file.name);
+                // printf("filepath: %s\n", filepath);
                 // FILE CHECK
                 __mkdir(filepath, 1);
-                printf("%s\n", filepath);
+                // printf("%s\n", filepath);
                 __inflate(item, fp, filepath);
 
 

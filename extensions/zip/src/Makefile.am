@@ -13,4 +13,9 @@ zip_LDADD = libnovemberizingzip.la
 
 zipdir = $(datadir)
 zip_DATA = zip.wasm
+else
+bin_PROGRAMS = example-unzip
+example_unzip_CXXFLAGS = -g -O3
+example_unzip_SOURCES = main.c
+example_unzip_LDADD = libnovemberizingzip.la -lz
 endif

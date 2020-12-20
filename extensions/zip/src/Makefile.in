@@ -90,6 +90,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@EMSCRIPTEN_FALSE@bin_PROGRAMS = example-unzip$(EXEEXT)
 @EMSCRIPTEN_TRUE@bin_PROGRAMS = zip$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -142,6 +143,10 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am__example_unzip_SOURCES_DIST = main.c
+@EMSCRIPTEN_FALSE@am_example_unzip_OBJECTS = main.$(OBJEXT)
+example_unzip_OBJECTS = $(am_example_unzip_OBJECTS)
+@EMSCRIPTEN_FALSE@example_unzip_DEPENDENCIES = libnovemberizingzip.la
 am_zip_OBJECTS =
 zip_OBJECTS = $(am_zip_OBJECTS)
 @EMSCRIPTEN_TRUE@zip_DEPENDENCIES = libnovemberizingzip.la
@@ -163,7 +168,7 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/zip.Plo
+am__depfiles_remade = ./$(DEPDIR)/main.Po ./$(DEPDIR)/zip.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -183,8 +188,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libnovemberizingzip_la_SOURCES) $(zip_SOURCES)
-DIST_SOURCES = $(libnovemberizingzip_la_SOURCES) $(zip_SOURCES)
+SOURCES = $(libnovemberizingzip_la_SOURCES) $(example_unzip_SOURCES) \
+	$(zip_SOURCES)
+DIST_SOURCES = $(libnovemberizingzip_la_SOURCES) \
+	$(am__example_unzip_SOURCES_DIST) $(zip_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -337,6 +344,9 @@ libnovemberizingzip_la_SOURCES = zip.c
 @EMSCRIPTEN_TRUE@zip_LDADD = libnovemberizingzip.la
 @EMSCRIPTEN_TRUE@zipdir = $(datadir)
 @EMSCRIPTEN_TRUE@zip_DATA = zip.wasm
+@EMSCRIPTEN_FALSE@example_unzip_CXXFLAGS = -g -O3
+@EMSCRIPTEN_FALSE@example_unzip_SOURCES = main.c
+@EMSCRIPTEN_FALSE@example_unzip_LDADD = libnovemberizingzip.la -lz
 all: all-am
 
 .SUFFIXES:
@@ -458,6 +468,10 @@ clean-libLTLIBRARIES:
 libnovemberizingzip.la: $(libnovemberizingzip_la_OBJECTS) $(libnovemberizingzip_la_DEPENDENCIES) $(EXTRA_libnovemberizingzip_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(LINK) -rpath $(libdir) $(libnovemberizingzip_la_OBJECTS) $(libnovemberizingzip_la_LIBADD) $(LIBS)
 
+example-unzip$(EXEEXT): $(example_unzip_OBJECTS) $(example_unzip_DEPENDENCIES) $(EXTRA_example_unzip_DEPENDENCIES) 
+	@rm -f example-unzip$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(example_unzip_OBJECTS) $(example_unzip_LDADD) $(LIBS)
+
 zip$(EXEEXT): $(zip_OBJECTS) $(zip_DEPENDENCIES) $(EXTRA_zip_DEPENDENCIES) 
 	@rm -f zip$(EXEEXT)
 	$(AM_V_CCLD)$(zip_LINK) $(zip_OBJECTS) $(zip_LDADD) $(LIBS)
@@ -468,6 +482,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/zip.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -654,7 +669,8 @@ clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
 	clean-libtool mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/zip.Plo
+		-rm -f ./$(DEPDIR)/main.Po
+	-rm -f ./$(DEPDIR)/zip.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -700,7 +716,8 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/zip.Plo
+		-rm -f ./$(DEPDIR)/main.Po
+	-rm -f ./$(DEPDIR)/zip.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

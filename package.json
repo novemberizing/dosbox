@@ -7,7 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "prebuild": "cd dosbox-0.74-3 && emconfigure ./configure --datadir=${PWD}/../src --bindir=${PWD}/../src --datarootdir=${PWD}/../build --host=`./config.guess` && emmake make clean && emmake make && emmake make install",
+    "build:extension:zip": "cd extensions/zip && emconfigure ./configure && emmake make",
+    "build:dosbox": "cd dosbox-0.74-3 && emconfigure ./configure --datadir=${PWD}/../src --bindir=${PWD}/../src --datarootdir=${PWD}/../build --host=`./config.guess` --with-zip=${PWD}/../extensions/zip && emmake make clean && emmake make && emmake make install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
